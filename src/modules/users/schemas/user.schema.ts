@@ -5,7 +5,7 @@ import { UserRole } from '../enums/user-role.enum';
 export type UserDocument = User & Document;
 
 @Schema({
-    timestamps: true // This will automatically add createdAt and updatedAt fields
+    timestamps: true
 })
 export class User {
     @Prop({ required: true })
@@ -19,6 +19,12 @@ export class User {
 
     @Prop({ type: String, enum: UserRole, default: UserRole.USER })
     role: UserRole;
+
+    @Prop()
+    createdAt: Date;
+
+    @Prop()
+    updatedAt: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
