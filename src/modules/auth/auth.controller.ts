@@ -4,6 +4,8 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { RegisterResponseDto } from './dto/register-response.dto';
 import { ErrorResponseDto } from '../../common/dto/error-response.dto';
+import { LoginDto } from './dto/login.dto';
+import { LoginResponseDto } from './dto/login-response.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -31,5 +33,21 @@ export class AuthController {
     })
     async register(@Body() registerDto: RegisterDto): Promise<RegisterResponseDto> {
         return this.authService.register(registerDto);
+    }
+
+    @Post('login')
+    @ApiOperation({ summary: 'User login' })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'User successfully logged in',
+        type: LoginResponseDto
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: 'Invalid credentials',
+        type: ErrorResponseDto
+    })
+    async login(@Body() loginDto: LoginDto): Promise<LoginResponseDto> {
+        return this.authService.login(loginDto);
     }
 }
