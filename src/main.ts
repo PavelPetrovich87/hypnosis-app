@@ -5,6 +5,15 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  
+  // Enable CORS
+  app.enableCors({
+    origin: ['http://localhost:8081'], // Add your frontend URL(s)
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
+
   app.useGlobalPipes(new ValidationPipe());
 
   // Swagger setup
