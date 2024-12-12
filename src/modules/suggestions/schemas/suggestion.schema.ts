@@ -4,16 +4,16 @@ import { Document } from 'mongoose';
 // Add Goal schema at the top with other nested schemas
 @Schema({ _id: false })
 class Goal {
-  @Prop({ 
+  @Prop({
     required: true,
     unique: true, // Ensure unique IDs
-    index: true   // Index for faster lookups
+    index: true, // Index for faster lookups
   })
   id: string;
 
-  @Prop({ 
+  @Prop({
     required: true,
-    trim: true    // Remove whitespace from both ends
+    trim: true, // Remove whitespace from both ends
   })
   text: string;
 }
@@ -21,18 +21,18 @@ class Goal {
 // Nested Schemas for complex objects
 @Schema({ _id: false })
 class Induction {
-  @Prop({ 
+  @Prop({
     required: true,
-    enum: ['progressive_relaxation', 'eye_fixation', 'breathing_focus'] 
+    enum: ['progressive_relaxation', 'eye_fixation', 'breathing_focus'],
   })
   technique: 'progressive_relaxation' | 'eye_fixation' | 'breathing_focus';
 }
 
 @Schema({ _id: false })
 class Deepening {
-  @Prop({ 
+  @Prop({
     required: true,
-    enum: ['countdown', 'visualization', 'staircase', 'elevator'] 
+    enum: ['countdown', 'visualization', 'staircase', 'elevator'],
   })
   method: 'countdown' | 'visualization' | 'staircase' | 'elevator';
 
@@ -72,9 +72,9 @@ class Integration {
 
 @Schema({ _id: false })
 class Emergence {
-  @Prop({ 
+  @Prop({
     required: true,
-    enum: ['counting_up', 'gradual_awareness', 'stretching'] 
+    enum: ['counting_up', 'gradual_awareness', 'stretching'],
   })
   technique: 'counting_up' | 'gradual_awareness' | 'stretching';
 }
@@ -82,7 +82,7 @@ class Emergence {
 // Main Schema
 @Schema({
   timestamps: true, // Automatically add createdAt and updatedAt fields
-  collection: 'sessions' // Explicitly name the collection
+  collection: 'sessions', // Explicitly name the collection
 })
 export class SelfHypnosisSession extends Document {
   @Prop({ type: Goal, required: true })
@@ -114,7 +114,8 @@ export class SelfHypnosisSession extends Document {
   tags?: string[];
 }
 
-export const SelfHypnosisSessionSchema = SchemaFactory.createForClass(SelfHypnosisSession);
+export const SelfHypnosisSessionSchema =
+  SchemaFactory.createForClass(SelfHypnosisSession);
 
 // Add indexes for better query performance
 SelfHypnosisSessionSchema.index({ createdAt: -1 });

@@ -22,6 +22,7 @@ async function bootstrap() {
     .setDescription('The Hypnosis API description')
     .setVersion('1.0')
     .addTag('auth')
+    .addTag('suggestions')
     .addBearerAuth(
       {
         type: 'http',
