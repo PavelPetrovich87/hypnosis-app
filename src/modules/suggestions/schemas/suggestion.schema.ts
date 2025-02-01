@@ -1,13 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
 
 // Add Goal schema at the top with other nested schemas
 @Schema({ _id: false })
 class Goal {
   @Prop({
     required: true,
-    unique: true, // Ensure unique IDs
-    index: true, // Index for faster lookups
+    default: () => uuidv4()  // Add default value
   })
   id: string;
 
@@ -26,6 +26,9 @@ class Induction {
     enum: ['progressive_relaxation', 'eye_fixation', 'breathing_focus'],
   })
   technique: 'progressive_relaxation' | 'eye_fixation' | 'breathing_focus';
+
+  @Prop({ required: true, min: 1, max: 15 })
+  duration: number;
 }
 
 @Schema({ _id: false })
@@ -35,6 +38,9 @@ class Deepening {
     enum: ['countdown', 'visualization', 'staircase', 'elevator'],
   })
   method: 'countdown' | 'visualization' | 'staircase' | 'elevator';
+
+  @Prop({ required: true, min: 1, max: 10 })
+  duration: number;
 
   @Prop()
   visualizationDetails?: string;
@@ -50,6 +56,9 @@ class Technique {
 
   @Prop({ type: [String] })
   visualizations?: string[];
+
+  @Prop({ required: true, min: 1, max: 20 })
+  duration: number;
 }
 
 @Schema({ _id: false })
@@ -57,26 +66,41 @@ class WorkingPhase {
   @Prop({ type: [Technique], required: true })
   techniques: Technique[];
 
-  @Prop({ type: [String], required: true })
-  suggestionsUsed: string[];
+  @Prop({ type: [String] })  // Remove required
+  suggestionsUsed?: string[];  // Make optional
 }
 
 @Schema({ _id: false })
 class Integration {
-  @Prop({ type: [String] })
-  mentalRehearsals?: string[];
+  @Prop({
+    required: true,
+    enum: ['future_pacing', 'rehearsal', 'anchoring', 'symbolic_bridge'],
+  })
+  method: string;
 
-  @Prop({ type: [String], required: true })
-  postHypnoticSuggestions: string[];
+  @Prop({ type: Object, required: true })
+  configuration: {
+    anchorTrigger?: string;
+    symbolicObject?: string;
+  };
 }
 
 @Schema({ _id: false })
 class Emergence {
-  @Prop({
-    required: true,
-    enum: ['counting_up', 'gradual_awareness', 'stretching'],
-  })
-  technique: 'counting_up' | 'gradual_awareness' | 'stretching';
+  @Prop({ required: true, enum: ['gradual', 'balanced', 'quick'] })
+  pace: string;
+
+  @Prop({ required: true, enum: ['body', 'count', 'environment'] })
+  focus: string;
+
+  @Prop({ required: true, enum: ['calm', 'alert', 'balanced'] })
+  energyState: string;
+
+  @Prop()
+  nextActivity?: string;
+
+  @Prop({ min: 1, max: 10 })
+  duration?: number;
 }
 
 // Main Schema

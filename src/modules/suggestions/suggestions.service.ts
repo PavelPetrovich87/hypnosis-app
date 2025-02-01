@@ -4,6 +4,8 @@ import { Model } from 'mongoose';
 import { SelfHypnosisSession } from './schemas/suggestion.schema';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { UpdateSessionDto } from './dto/update-session.dto';
+import { SessionResponseDto, SessionListResponseDto } from './dto/response.dto';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class SuggestionsService {
@@ -12,13 +14,33 @@ export class SuggestionsService {
     private sessionModel: Model<SelfHypnosisSession>,
   ) {}
 
-  async create(createSessionDto: CreateSessionDto): Promise<SelfHypnosisSession> {
+  async create(
+    createSessionDto: CreateSessionDto,
+  ): Promise<SessionResponseDto<SelfHypnosisSession>> {
+    // Generate goal ID if not provided
+    if (!createSessionDto.goal.id) {
+      createSessionDto.goal.id = uuidv4();
+    }
+
+    // Generate technique IDs if not provided
+    createSessionDto.workingPhase.techniques =
+      createSessionDto.workingPhase.techniques?.map((tech) => ({
+        ...tech,
+        id: tech.id || uuidv4(),
+      })) || [];
+
     const createdSession = new this.sessionModel(createSessionDto);
-    return createdSession.save();
+    const saved = await createdSession.save();
+    return new SessionResponseDto(true, 'Session created successfully', saved);
   }
 
-  async findAll(): Promise<SelfHypnosisSession[]> {
-    return this.sessionModel.find().exec();
+  async findAll(): Promise<SessionListResponseDto<SelfHypnosisSession>> {
+    const sessions = await this.sessionModel.find().exec();
+    return new SessionListResponseDto(
+      true,
+      'Sessions retrieved successfully',
+      sessions,
+    );
   }
 
   async findOne(id: string): Promise<SelfHypnosisSession> {
@@ -36,7 +58,6 @@ export class SuggestionsService {
     const updatedSession = await this.sessionModel
       .findByIdAndUpdate(id, updateSessionDto, { new: true })
       .exec();
-    
     if (!updatedSession) {
       throw new NotFoundException(`Session with ID "${id}" not found`);
     }

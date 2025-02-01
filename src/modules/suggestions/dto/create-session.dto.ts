@@ -1,13 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEnum, IsOptional, IsArray, ValidateNested, Min, Max, ArrayMinSize } from 'class-validator';
+import { IsString, IsEnum, IsOptional, IsArray, ValidateNested, Min, Max, ArrayMinSize, IsUUID, IsIn, IsNotEmpty, MinLength, MaxLength, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class GoalDto {
-  @ApiProperty({ description: 'Unique identifier for the goal' })
-  @IsString()
-  id: string;
+  @ApiProperty({ description: 'Optional UUIDv4 identifier' })
+  @IsUUID('4')
+  @IsOptional()
+  id?: string;
 
-  @ApiProperty({ description: 'Description of the goal' })
+  @ApiProperty({ description: 'Goal description' })
   @IsString()
   text: string;
 }
@@ -15,32 +16,46 @@ export class GoalDto {
 export class InductionDto {
   @ApiProperty({
     enum: ['progressive_relaxation', 'eye_fixation', 'breathing_focus'],
-    description: 'The induction technique to be used'
   })
   @IsEnum(['progressive_relaxation', 'eye_fixation', 'breathing_focus'])
   technique: 'progressive_relaxation' | 'eye_fixation' | 'breathing_focus';
+
+  @ApiProperty({ description: 'Duration in minutes' })
+  @IsNumber()
+  @Min(1)
+  @Max(15)
+  duration: number;
 }
 
 export class DeepeningDto {
   @ApiProperty({
     enum: ['countdown', 'visualization', 'staircase', 'elevator'],
-    description: 'The deepening method to be used'
   })
   @IsEnum(['countdown', 'visualization', 'staircase', 'elevator'])
   method: 'countdown' | 'visualization' | 'staircase' | 'elevator';
 
-  @ApiProperty({
-    required: false,
-    description: 'Additional details for visualization method'
-  })
+  @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
   visualizationDetails?: string;
+
+  @ApiProperty({ description: 'Duration in minutes' })
+  @IsNumber()
+  @Min(1)
+  @Max(10)
+  duration: number;
 }
 
 export class TechniqueDto {
-  @ApiProperty({ description: 'Name of the technique' })
+  @ApiProperty({ description: 'Optional UUIDv4 identifier' })
+  @IsUUID('4')
+  @IsOptional()
+  id?: string;
+
+  @ApiProperty()
   @IsString()
+  @MinLength(3)
+  @MaxLength(50)
   name: string;
 
   @ApiProperty({
@@ -62,6 +77,12 @@ export class TechniqueDto {
   @IsString({ each: true })
   @IsOptional()
   visualizations?: string[];
+
+  @ApiProperty({ description: 'Duration in minutes' })
+  @IsNumber()
+  @Min(1)
+  @Max(20)
+  duration: number;
 }
 
 export class WorkingPhaseDto {
@@ -81,38 +102,59 @@ export class WorkingPhaseDto {
   })
   @IsArray()
   @IsString({ each: true })
-  @ArrayMinSize(1)
-  suggestionsUsed: string[];
+  @IsOptional()
+  suggestionsUsed?: string[];
+}
+
+class IntegrationConfigurationDto {
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  anchorTrigger?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  symbolicObject?: string;
 }
 
 export class IntegrationDto {
   @ApiProperty({
-    required: false,
-    type: [String],
-    description: 'List of mental rehearsals for integration'
+    enum: ['future_pacing', 'rehearsal', 'anchoring', 'symbolic_bridge'],
   })
-  @IsArray()
-  @IsString({ each: true })
-  @IsOptional()
-  mentalRehearsals?: string[];
+  @IsEnum(['future_pacing', 'rehearsal', 'anchoring', 'symbolic_bridge'])
+  method: 'future_pacing' | 'rehearsal' | 'anchoring' | 'symbolic_bridge';
 
-  @ApiProperty({
-    type: [String],
-    description: 'List of post-hypnotic suggestions'
-  })
-  @IsArray()
-  @IsString({ each: true })
-  @ArrayMinSize(1)
-  postHypnoticSuggestions: string[];
+  @ApiProperty()
+  @ValidateNested()
+  @Type(() => IntegrationConfigurationDto)
+  configuration: IntegrationConfigurationDto;
 }
 
 export class EmergenceDto {
-  @ApiProperty({
-    enum: ['counting_up', 'gradual_awareness', 'stretching'],
-    description: 'The emergence technique to be used'
-  })
-  @IsEnum(['counting_up', 'gradual_awareness', 'stretching'])
-  technique: 'counting_up' | 'gradual_awareness' | 'stretching';
+  @ApiProperty({ enum: ['gradual', 'balanced', 'quick'] })
+  @IsEnum(['gradual', 'balanced', 'quick'])
+  pace: 'gradual' | 'balanced' | 'quick';
+
+  @ApiProperty({ enum: ['body', 'count', 'environment'] })
+  @IsEnum(['body', 'count', 'environment'])
+  focus: 'body' | 'count' | 'environment';
+
+  @ApiProperty({ enum: ['calm', 'alert', 'balanced'] })
+  @IsEnum(['calm', 'alert', 'balanced'])
+  energyState: 'calm' | 'alert' | 'balanced';
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  nextActivity?: string;
+
+  @ApiProperty({ required: false })
+  @IsNumber()
+  @Min(1)
+  @Max(10)
+  @IsOptional()
+  duration?: number;
 }
 
 export class CreateSessionDto {
