@@ -1,5 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEnum, IsOptional, IsArray, ValidateNested, Min, Max, ArrayMinSize, IsUUID, IsIn, IsNotEmpty, MinLength, MaxLength, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsEnum,
+  IsOptional,
+  IsArray,
+  ValidateNested,
+  Min,
+  Max,
+  ArrayMinSize,
+  IsUUID,
+  MinLength,
+  MaxLength,
+  IsNumber,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class GoalDto {
@@ -47,8 +60,8 @@ export class DeepeningDto {
 }
 
 export class TechniqueDto {
-  @ApiProperty({ description: 'Optional UUIDv4 identifier' })
-  @IsUUID('4')
+  @ApiProperty({ description: 'Optional identifier' })
+  @IsString()
   @IsOptional()
   id?: string;
 
@@ -61,7 +74,7 @@ export class TechniqueDto {
   @ApiProperty({
     required: false,
     type: [String],
-    description: 'List of affirmations used in the technique'
+    description: 'List of affirmations used in the technique',
   })
   @IsArray()
   @IsString({ each: true })
@@ -71,7 +84,7 @@ export class TechniqueDto {
   @ApiProperty({
     required: false,
     type: [String],
-    description: 'List of visualizations used in the technique'
+    description: 'List of visualizations used in the technique',
   })
   @IsArray()
   @IsString({ each: true })
@@ -88,7 +101,7 @@ export class TechniqueDto {
 export class WorkingPhaseDto {
   @ApiProperty({
     type: [TechniqueDto],
-    description: 'List of techniques used in the working phase'
+    description: 'List of techniques used in the working phase',
   })
   @IsArray()
   @ValidateNested({ each: true })
@@ -98,7 +111,7 @@ export class WorkingPhaseDto {
 
   @ApiProperty({
     type: [String],
-    description: 'List of suggestions used in the session'
+    description: 'List of suggestions used in the session',
   })
   @IsArray()
   @IsString({ each: true })
@@ -191,7 +204,7 @@ export class CreateSessionDto {
   @ApiProperty({
     required: false,
     minimum: 0,
-    description: 'Duration of the session in minutes'
+    description: 'Duration of the session in minutes',
   })
   @IsOptional()
   @Min(0)
@@ -201,7 +214,7 @@ export class CreateSessionDto {
     required: false,
     minimum: 1,
     maximum: 10,
-    description: 'Rating of session effectiveness (1-10)'
+    description: 'Rating of session effectiveness (1-10)',
   })
   @IsOptional()
   @Min(1)
@@ -211,10 +224,10 @@ export class CreateSessionDto {
   @ApiProperty({
     required: false,
     type: [String],
-    description: 'Tags for categorizing the session'
+    description: 'Tags for categorizing the session',
   })
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
   tags?: string[];
-} 
+}

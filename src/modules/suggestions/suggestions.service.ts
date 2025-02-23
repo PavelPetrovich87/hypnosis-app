@@ -26,7 +26,7 @@ export class SuggestionsService {
     createSessionDto.workingPhase.techniques =
       createSessionDto.workingPhase.techniques?.map((tech) => ({
         ...tech,
-        id: tech.id || uuidv4(),
+        id: tech.id ? tech.id : uuidv4(), // Accept any string but generate UUID if missing
       })) || [];
 
     const createdSession = new this.sessionModel(createSessionDto);
